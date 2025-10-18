@@ -14,7 +14,14 @@ git clone https://github.com/recrof/map.meshcore.dev-uploader
 cd map.meshcore.dev-uploader
 npm install .
 ```
-
-## Usage
+### Usage
 1. Connect working MeshCore companion usb into the computer
 2. run `node index.mjs [usb_port]`
+
+## Running with Docker
+After cloning the repo, build and run the docker image with 
+```sh
+docker-compose build
+docker-compose up
+```
+You will be able to inspect the logs. Once everything is working correctly, run the container with ``docker-compose up -d`` to run it in the background.
