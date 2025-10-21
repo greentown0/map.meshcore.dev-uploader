@@ -4,6 +4,7 @@ import {
   Advert
 } from '@liamcottle/meshcore.js';
 
+import { KeyPair } from './supercop/index.mjs';
 import crypto from 'crypto';
 
 const device = process.argv[2] ?? '/dev/ttyACM0';
@@ -11,13 +12,13 @@ const apiURL = 'https://map.meshcore.dev/api/v1/uploader/node';
 const seenAdverts = {};
 let clientInfo = {};
 
-const signData = async (connection, data) => {
+const signData = async (kp, data) => {
   const json = JSON.stringify(data);
   const dataHash = new Uint8Array(
     await crypto.subtle.digest('SHA-256', new TextEncoder().encode(json))
   );
 
-  return { data: json, signature: BufferUtils.bytesToHex(await connection.sign(dataHash)) }
+  return { data: json, signature: BufferUtils.bytesToHex(await kp.sign(dataHash)) }
 }
 
 const processPacket = async (connection, rawPacket) => {
@@ -26,7 +27,7 @@ const processPacket = async (connection, rawPacket) => {
   if(packet.payload_type_string !== 'ADVERT') return;
 
   const advert = Advert.fromBytes(packet.payload);
-  // console.log(advert);
+  // console.debug('DEBUG: got advert', advert);
   if(advert.parsed.type === 'CHAT') return;
 
   const pubKey = BufferUtils.bytesToHex(advert.publicKey);
@@ -59,13 +60,15 @@ const processPacket = async (connection, rawPacket) => {
     links: [`meshcore://${BufferUtils.bytesToHex(rawPacket)}`]
   };
 
-  const requestData = await signData(connection, data);
+  const requestData = await signData(clientInfo.kp, data);
   requestData.publicKey = BufferUtils.bytesToHex(clientInfo.publicKey);
 
   const req = await fetch(apiURL, {
     method: 'POST',
     body: JSON.stringify(requestData)
   });
+
+  // console.debug('DEBUG: sent request', req);
 
   console.log('sending', requestData)
   console.log(await req.json());
@@ -89,7 +92,7 @@ connection.on('connected', async () => {
   connection.setManualAddContacts();
 
   clientInfo = await connection.getSelfInfo();
-  // console.log('info', clientInfo);
+  clientInfo.kp = KeyPair.from({ publicKey: clientInfo.publicKey, secretKey: (await connection.exportPrivateKey()).privateKey });
 
   console.log('Map uploader waiting for adverts...');
 });
