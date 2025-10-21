@@ -4,7 +4,7 @@
 This bot will upload every repeater or room server to the map when companion hears new advert
 
 ## Requirements
-You will need Meshcore device with Companion USB firmware connected to the computer with internet connection
+You will need Meshcore device with Companion USB connected to your machine or Companion WiFi on the same network.
 
 ## Installation
 1. [Install Node.js 22 or higher](https://nodejs.org/en/download/)(most recent LTS recommended)
@@ -16,7 +16,7 @@ npm install .
 ```
 ### Usage
 1. Connect working MeshCore companion usb into the computer
-2. run `node index.mjs [usb_port]`
+2. run `node index.mjs (usb_port)` or `node index.mjs (host:port)`
 
 ## Running with Docker
 After cloning the repo, build and run the docker image with 
