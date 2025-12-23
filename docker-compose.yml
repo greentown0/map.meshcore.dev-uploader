@@ -1,6 +1,9 @@
 services:
   map-uploader:
     build: .
+    # Optionally expose the port if you want to monitor the container's health externally
+    # ports:
+    #   - "8080:8080"
     environment:
       # Set to the appropriate device for your setup, either /dev/ttyACM0 if connected by USB to a USB companion or IP:port if connected over network to a wifi companion
       - DEVICE=/dev/ttyACM0
@@ -10,3 +13,9 @@ services:
     # Adjust according to your setup, but this is the default
     devices:
       - /dev/ttyACM0:/dev/ttyACM0
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 1
+      start_period: 5s
