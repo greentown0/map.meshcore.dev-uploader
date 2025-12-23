@@ -6,11 +6,24 @@ import {
 
 import { KeyPair } from './supercop/index.mjs';
 import crypto from 'crypto';
+import http from 'http';
 
 const device = process.argv[2] ?? '/dev/ttyACM0';
 const apiURL = 'https://map.meshcore.dev/api/v1/uploader/node';
 const seenAdverts = {};
 let clientInfo = {};
+let isHealthy = false;
+
+// Health check server
+http.createServer((req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(isHealthy ? 200 : 503);
+    res.end(isHealthy ? 'OK' : 'Not Ready');
+  } else {
+    res.writeHead(404);
+    res.end();
+  }
+}).listen(8080);
 
 const signData = async (kp, data) => {
   const json = JSON.stringify(data);
@@ -88,6 +101,7 @@ if(device.startsWith('/') || device.startsWith('COM')){
 
 connection.on('connected', async () => {
   console.log(`Connected.`);
+  isHealthy = true;
 
   connection.setManualAddContacts();
 
@@ -95,6 +109,21 @@ connection.on('connected', async () => {
   clientInfo.kp = KeyPair.from({ publicKey: clientInfo.publicKey, secretKey: (await connection.exportPrivateKey()).privateKey });
 
   console.log('Map uploader waiting for adverts...');
+});
+
+connection.on('disconnected', () => {
+  console.log('Disconnected. Exiting...');
+  process.exit(1);
+});
+
+connection.on('close', () => {
+  console.log('Connection closed. Exiting...');
+  process.exit(1);
+});
+
+connection.on('error', (err) => {
+  console.error('Connection error:', err);
+  process.exit(1);
 });
 
 connection.on(Constants.PushCodes.LogRxData, async (event) => {
