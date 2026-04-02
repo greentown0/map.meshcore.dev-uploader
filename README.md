@@ -19,12 +19,27 @@ npm install .
 2. run `node index.mjs (usb_port)` or `node index.mjs (host:port)`
 
 ## Running with Docker
+### Option 1 (easier)
+Download docker compose file and run
+```sh
+mkdir ~/map.meshcore.dev-uploader
+cd ~/map.meshcore.dev-uploader
+wget https://github.com/greentown0/map.meshcore.dev-uploader/blob/main/docker-compose.yml
+docker-compose up
+```
+
+### Option 2 (if you are a developer)
 After cloning the repo, build and run the docker image with 
 ```sh
 docker-compose build
 docker-compose up
 ```
-You will be able to inspect the logs. Once everything is working correctly, run the container with ``docker-compose up -d`` to run it in the background.
+
+## Logs
+You can inspect the logs with
+```sh
+docker compose logs -f map-uploader
+```
 
 ### Configuration in Docker
 You can override default values with a .env file, such as:
@@ -34,6 +49,8 @@ DEVICE=192.168.10.74:5000
 # Override timeout to 30 mins (if no adverts have been received within this time, the container will report unhealthy and restart automatically)
 ADVERT_TIMEOUT_MS=1800000
 ```
+A .env.example is included.
+
 ## Running with Podman
 To avoid running with priveledged mode, podman can be used to build and run this image.
 
