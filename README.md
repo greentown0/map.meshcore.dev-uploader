@@ -24,7 +24,7 @@ Download docker compose file and run
 ```sh
 mkdir ~/map.meshcore.dev-uploader
 cd ~/map.meshcore.dev-uploader
-wget https://github.com/greentown0/map.meshcore.dev-uploader/blob/main/docker-compose.yml
+wget https://raw.githubusercontent.com/greentown0/map.meshcore.dev-uploader/refs/heads/main/docker-compose.yml
 docker-compose up
 ```
 

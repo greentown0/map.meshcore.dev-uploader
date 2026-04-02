@@ -44,10 +44,9 @@ jobs:
       packages: write
 
     steps:
-      - name: Delete old untagged image versions
-        uses: actions/delete-package-versions@v5
+      - name: Delete orphaned untagged image versions
+        uses: dataaxiom/ghcr-cleanup-action@v1
         with:
-          package-name: map.meshcore.dev-uploader
-          package-type: container
-          min-versions-to-keep: 0
-          delete-only-untagged-versions: true
+          package: map.meshcore.dev-uploader
+          delete-untagged: true
+          token: ${{ secrets.GITHUB_TOKEN }}
