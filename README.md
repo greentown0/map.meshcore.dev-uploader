@@ -24,10 +24,14 @@ Download docker compose file and run
 ```sh
 mkdir ~/map.meshcore.dev-uploader
 cd ~/map.meshcore.dev-uploader
+wget https://raw.githubusercontent.com/greentown0/map.meshcore.dev-uploader/refs/heads/main/.env.example
 wget https://raw.githubusercontent.com/greentown0/map.meshcore.dev-uploader/refs/heads/main/docker-compose.yml
+cp .env.example .env
+```
+Edit the ``.env`` file to suit your needs. Run the image with
+```sh
 docker-compose up
 ```
-
 ### Option 2 (if you are a developer)
 After cloning the repo, build and run the docker image with 
 ```sh
