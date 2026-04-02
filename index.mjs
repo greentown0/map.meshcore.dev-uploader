@@ -67,7 +67,14 @@ const processPacket = async (connection, rawPacket) => {
   const pubKey = BufferUtils.bytesToHex(advert.publicKey);
   const node = { pubKey, name: advert.parsed.name, ts: advert.timestamp, type: advert.parsed.type.toLowerCase() };
 
-  if(!advert.isVerified()) {
+  let verified = false;
+  try {
+    verified = advert.isVerified();
+  } catch(e) {
+    warn('ignoring: signature verification threw (malformed signature?)', node, e.message);
+    return;
+  }
+  if(!verified) {
     warn('ignoring: signature verification failed', node);
     return;
   }
