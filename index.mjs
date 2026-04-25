@@ -9,7 +9,7 @@ import crypto from 'crypto';
 import http from 'http';
 
 const device = process.argv[2] ?? '/dev/ttyACM0';
-const apiURL = 'https://map.meshcore.dev/api/v1/uploader/node';
+const apiURL = 'https://map.meshcore.io/api/v1/uploader/node';
 const seenAdverts = {};
 let clientInfo = {};
 let isHealthy = false;
